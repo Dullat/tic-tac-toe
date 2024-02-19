@@ -23,14 +23,44 @@ let GameBoard = (function () {
 GameBoard.render();
 
 let regester = (function () {
+    let you = [];
+    let friend = [];
     let currentUser = "you";
-    function switchUser(value) {
+
+    function checkWinner(plr) {
+        const winningCombos = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        winningCombos.forEach((combo) => {
+            let [a,b,c] = combo;
+            console.log([a,b,c]);
+            if(plr.includes(a) && plr.includes(b) && plr.includes(c)){
+                console.log("won");
+            }
+        })
+    }
+
+    function switchUser(value, index) {
         console.log(currentUser);
-        if(currentUser === "you"){
+        if (currentUser === "you") {
+            you.push(index);
+            checkWinner(you);
             currentUser = "friend";
-        }else if(currentUser === "friend"){
+        } else if (currentUser === "friend") {
+            friend.push(index);
+            checkWinner(friend);
             currentUser = "you"
         }
+
+        console.log({ ur: you, frnd: friend });
     }
 
     let getBoxes = () => {
@@ -38,7 +68,7 @@ let regester = (function () {
             element.addEventListener('click', () => {
                 element.style.background = 'red';
                 if (!element.hasAttribute('clicked')) {
-                    switchUser(element);
+                    switchUser(element, index);
                 }
                 element.setAttribute('clicked', '');
             });

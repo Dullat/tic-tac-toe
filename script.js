@@ -5,14 +5,6 @@ let GameBoard = (function () {
         "", "", ""
     ];
 
-    function drawMarks(box, mark) {
-        box.textContent = mark;
-        console.log(box);
-        if(mark === "X"){
-            box.style.background = 'aqua';
-        }
-    }
-
     let render = () => {
         let boardContainer = document.querySelector('.board');
         gameBoard.forEach((element, index) => {
@@ -21,19 +13,42 @@ let GameBoard = (function () {
             boardHtml.setAttribute('id', `box-number-${index}`);
             boardHtml.textContent = "";
             boardContainer.appendChild(boardHtml);
-            console.log("h");
         });
     };
 
-    return { render, drawMarks };
+    function drawMarks(box, mark) {
+        box.textContent = mark;
+        if (mark === "X") {
+            box.style.background = 'aqua';
+        } else box.style.background = 'red';
+    };
+
+    function afterWin(array) {
+        document.querySelectorAll('.box').forEach(e => {
+            e.setAttribute('hide', '');
+        })
+        array.forEach((e, i) => {
+            document.querySelector(`#box-number-${e}`).removeAttribute('hide');
+        });
+    }
+
+    let clear = () => {
+        let board = document.querySelector('.board');
+        while (board.firstChild) {
+            board.removeChild(board.firstChild);
+        }
+        render();
+    }
+
+    return { render, drawMarks, afterWin, clear };
 })();
 
 GameBoard.render();
 
 let regester = (function () {
-    let you = [];
-    let friend = [];
-    let currentUser = "you";
+    let plr1 = [];
+    let plr2 = [];
+    let currentUser = "plr1";
 
     function checkWinner(plr, who) {
         const winningCombos = [
@@ -48,35 +63,31 @@ let regester = (function () {
         ];
 
         winningCombos.forEach((combo) => {
-            let [a,b,c] = combo;
-            console.log([a,b,c]);
-            if(plr.includes(a) && plr.includes(b) && plr.includes(c)){
-                alert(`${who} won`)
+            let [a, b, c] = combo;
+            if (plr.includes(a) && plr.includes(b) && plr.includes(c)) {
+                GameBoard.afterWin([a, b, c]);
+                console.log(a, b, c);
             }
         })
     }
 
     function switchUser(box, index) {
-        console.log(currentUser);
-        if (currentUser === "you") {
+        if (currentUser === "plr1") {
             GameBoard.drawMarks(box, "X");
-            you.push(index);
-            checkWinner(you, "you");
-            currentUser = "friend";
-        } else if (currentUser === "friend") {
+            plr1.push(index);
+            checkWinner(plr1, "plr1");
+            currentUser = "plr2";
+        } else if (currentUser === "plr2") {
             GameBoard.drawMarks(box, "O");
-            friend.push(index);
-            checkWinner(friend, "friend");
-            currentUser = "you"
+            plr2.push(index);
+            checkWinner(plr2, "plr2");
+            currentUser = "plr1"
         }
-
-        console.log({ ur: you, frnd: friend });
     }
 
     let getBoxes = () => {
         document.querySelectorAll('.box').forEach((element, index) => {
             element.addEventListener('click', () => {
-                element.style.background = 'red';
                 if (!element.hasAttribute('clicked')) {
                     switchUser(element, index);
                 }
@@ -85,7 +96,29 @@ let regester = (function () {
         });
     };
 
-    return { getBoxes };
+    let clear = () => {
+        plr1 = [];
+        plr2 = [];
+        currentUser = "plr1";
+    }
+
+    return { getBoxes, clear };
 })();
 
-regester.getBoxes();
+
+
+
+// start and clear
+
+(function () {
+    let btn = document.querySelector('#start');
+    btn.addEventListener('click', () => {
+        regester.getBoxes();
+        if (btn.textContent === 'Clear') {
+            GameBoard.clear();
+            regester.clear();
+            btn.textContent = 'Start';
+        } else
+            btn.textContent = 'Clear';
+    })
+})();

@@ -24,4 +24,8 @@ body {
     width: 5rem;
     aspect-ratio: 1;
     background: gray;
+    font-size: 2rem;
+
+    display: grid;
+    place-content: center;
 }

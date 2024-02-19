@@ -5,6 +5,14 @@ let GameBoard = (function () {
         "", "", ""
     ];
 
+    function drawMarks(box, mark) {
+        box.textContent = mark;
+        console.log(box);
+        if(mark === "X"){
+            box.style.background = 'aqua';
+        }
+    }
+
     let render = () => {
         let boardContainer = document.querySelector('.board');
         gameBoard.forEach((element, index) => {
@@ -17,7 +25,7 @@ let GameBoard = (function () {
         });
     };
 
-    return { render };
+    return { render, drawMarks };
 })();
 
 GameBoard.render();
@@ -27,7 +35,7 @@ let regester = (function () {
     let friend = [];
     let currentUser = "you";
 
-    function checkWinner(plr) {
+    function checkWinner(plr, who) {
         const winningCombos = [
             [0, 1, 2],
             [3, 4, 5],
@@ -43,20 +51,22 @@ let regester = (function () {
             let [a,b,c] = combo;
             console.log([a,b,c]);
             if(plr.includes(a) && plr.includes(b) && plr.includes(c)){
-                console.log("won");
+                alert(`${who} won`)
             }
         })
     }
 
-    function switchUser(value, index) {
+    function switchUser(box, index) {
         console.log(currentUser);
         if (currentUser === "you") {
+            GameBoard.drawMarks(box, "X");
             you.push(index);
-            checkWinner(you);
+            checkWinner(you, "you");
             currentUser = "friend";
         } else if (currentUser === "friend") {
+            GameBoard.drawMarks(box, "O");
             friend.push(index);
-            checkWinner(friend);
+            checkWinner(friend, "friend");
             currentUser = "you"
         }
 
